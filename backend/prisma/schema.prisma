@@ -36,6 +36,43 @@ model Otp {
   @@map("otps")
 }
 
+model Category {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String    @unique
+  slug      String    @unique
+  image     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  title       String
+  slug        String @unique
+  description String
+
+  price Float
+  stock Int
+
+  author    String
+  publisher String?
+  isbn      String?
+
+  images String[]
+
+  categoryId String   @db.ObjectId
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 enum Role {
   USER
   ADMIN
