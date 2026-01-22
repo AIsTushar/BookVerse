@@ -1,4 +1,4 @@
-import { User } from "@prisma/client";
+import { Role, User } from "@prisma/client";
 import ApiError from "../../error/ApiErrors";
 import { StatusCodes } from "http-status-codes";
 import { compare, hash } from "bcrypt";
@@ -138,9 +138,42 @@ const getMyProfile = async (id: string) => {
   return result;
 };
 
+const createModarator = async (payload: any) => {
+  const { name, email, password } = payload;
+
+  const findUser = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  if (findUser) {
+    throw new ApiError(StatusCodes.UNAUTHORIZED, "User already exists");
+  }
+  const newPass = await hash(payload.password, 10);
+  const result = await prisma.user.create({
+    data: {
+      ...payload,
+      password: newPass,
+      isVerified: true,
+      Role: Role.MODERATOR,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+  return result;
+};
+
 export const userServices = {
   createUserIntoDB,
   updateUserIntoDB,
   changePasswordIntoDB,
   getMyProfile,
+  createModarator,
 };

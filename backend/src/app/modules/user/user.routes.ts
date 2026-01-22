@@ -30,5 +30,10 @@ route.put(
   userController.updateUserController,
 );
 route.get("/me", auth(), userController.getMyProfileController);
+route.post(
+  "/create-modarator",
+  auth(Role.ADMIN),
+  userController.createModaratorController,
+);
 
 export const userRoutes = route;

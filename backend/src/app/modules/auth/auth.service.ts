@@ -7,6 +7,7 @@ import { StatusCodes } from "http-status-codes";
 import { createStripeCustomerAcc } from "../../helper/createStripeCustomerAcc";
 import { OTPFn } from "../../helper/OTP/OTPFn";
 import OTPVerify from "../../helper/OTP/OTPVerify";
+import { verifyGoogleToken } from "../../helper/verifyGoogleToken";
 
 const prisma = new PrismaClient();
 const logInFromDB = async (payload: { email: string; password: string }) => {
@@ -117,70 +118,58 @@ const resendOtp = async (payload: { email: string }) => {
   OTPFn(findUser.email);
 };
 
-const socialLogin = async (payload: {
-  email: string;
-  name: string;
-  role: Role;
-  image?: string;
-}) => {
-  const userData = await prisma.user.findUnique({
-    where: {
-      email: payload.email.trim(),
-    },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      image: true,
-      role: true,
-      customerId: true,
-      status: true,
-      createdAt: true,
-      updatedAt: true,
-    },
+const socialLogin = async ({ idToken }: { idToken: string }) => {
+  const data = await verifyGoogleToken(idToken);
+
+  if (!data) {
+    throw new ApiError(401, "Invalid Google token");
+  }
+
+  if (!data.email_verified) {
+    throw new ApiError(401, "Google email not verified");
+  }
+
+  const { email, name, picture } = data;
+
+  if (!email) {
+    throw new ApiError(400, "Google account has no email");
+  }
+
+  let user = await prisma.user.findUnique({
+    where: { email: email?.trim() },
   });
 
-  if (userData) {
-    const accessToken = jwtHelpers.generateToken(
-      { id: userData.id, email: userData.email, role: userData.role },
-      { expiresIn: "24h" },
-    );
-    return {
-      ...userData,
-      accessToken,
-    };
-  } else {
-    const result = await prisma.user.create({
+  if (!user) {
+    user = await prisma.user.create({
       data: {
-        ...payload,
+        email: email?.trim(),
+        name,
+        image: picture,
+        role: Role.USER,
         password: "",
         status: "ACTIVE",
         isSocial: true,
         isVerified: true,
       },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        image: true,
-        role: true,
-        customerId: true,
-        status: true,
-        createdAt: true,
-        updatedAt: true,
-      },
     });
-    await createStripeCustomerAcc(result);
 
-    const accessToken = jwtHelpers.generateToken(
-      { id: result.id, email: result.email, role: result.role },
-      { expiresIn: "24h" },
-    );
-    return {
-      ...result,
-      accessToken,
-    };
+    try {
+      await createStripeCustomerAcc(user);
+    } catch (e) {
+      console.error("Stripe error", e);
+    }
   }
+
+  if (user.status !== "ACTIVE") {
+    throw new ApiError(403, "Account blocked");
+  }
+
+  const accessToken = jwtHelpers.generateToken(
+    { id: user.id, email: user.email, role: user.role },
+    { expiresIn: "24h" },
+  );
+
+  return { ...user, accessToken };
 };
 
 const resetPassword = async (payload: { token: string; password: string }) => {
