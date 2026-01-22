@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { jwtHelpers } from "./jwtHelper";
-import ApiError from "../error/ApiErrors";
 import { StatusCodes } from "http-status-codes";
+import ApiError from "../../error/ApiErrors";
+import { jwtHelpers } from "../jwtHelper";
 
 const prisma = new PrismaClient();
 
@@ -66,7 +66,7 @@ const OTPVerify = async (payload: {
   // Generate new token after successful verification
   const newToken = jwtHelpers.generateToken(
     { email: findUser.email, id: findUser.id, role: findUser.role },
-    { expiresIn: payload.time || "24h" }
+    { expiresIn: payload.time || "24h" },
   );
 
   await prisma.otp.delete({

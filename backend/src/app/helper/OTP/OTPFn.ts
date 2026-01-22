@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
-import { sendEmailFn } from "./email/emails";
+import { sendEmailFn } from "../email/emails";
 
 const prisma = new PrismaClient();
 

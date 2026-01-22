@@ -3,17 +3,13 @@ import { compare, hash } from "bcrypt";
 import { jwtHelpers } from "../../helper/jwtHelper";
 import { JwtPayload } from "jsonwebtoken";
 import ApiError from "../../error/ApiErrors";
-import { OTPFn } from "../../helper/OTPFn";
-import OTPVerify from "../../helper/OTPVerify";
 import { StatusCodes } from "http-status-codes";
 import { createStripeCustomerAcc } from "../../helper/createStripeCustomerAcc";
+import { OTPFn } from "../../helper/OTP/OTPFn";
+import OTPVerify from "../../helper/OTP/OTPVerify";
 
 const prisma = new PrismaClient();
-const logInFromDB = async (payload: {
-  email: string;
-  password: string;
-  fcmToken?: string;
-}) => {
+const logInFromDB = async (payload: { email: string; password: string }) => {
   const findUser = await prisma.user.findUnique({
     where: {
       email: payload.email,
@@ -21,6 +17,10 @@ const logInFromDB = async (payload: {
   });
   if (!findUser) {
     throw new ApiError(StatusCodes.NOT_FOUND, "User not found");
+  }
+
+  if (findUser.isSocial) {
+    throw new ApiError(StatusCodes.UNAUTHORIZED, "Please use social login");
   }
   const comparePassword = await compare(payload.password, findUser.password);
   if (!comparePassword) {
@@ -31,29 +31,20 @@ const logInFromDB = async (payload: {
     OTPFn(findUser.email);
     throw new ApiError(
       StatusCodes.UNAUTHORIZED,
-      "Please check your email address to verify your account"
+      "Please check your email address to verify your account",
     );
   }
 
-  if (payload.fcmToken) {
-    await prisma.user.update({
-      where: {
-        email: payload.email,
-      },
-      data: {
-        fcmToken: payload.fcmToken,
-      },
-    });
-  }
   const userInfo = {
+    id: findUser.id,
     email: findUser.email,
     name: findUser.name,
-    id: findUser.id,
     image: findUser.image,
     role: findUser.role,
+    isSocial: findUser.isSocial,
     status: findUser.status,
-    fcmToken: findUser.fcmToken,
   };
+
   const token = jwtHelpers.generateToken(userInfo, { expiresIn: "15d" });
   return { accessToken: token, ...userInfo };
 };
@@ -94,6 +85,13 @@ const forgetPassword = async (payload: { email: string }) => {
   });
   if (!findUser) {
     throw new ApiError(StatusCodes.NOT_FOUND, "User not found");
+  }
+
+  if (findUser.isSocial) {
+    throw new ApiError(
+      StatusCodes.UNAUTHORIZED,
+      "Social login user can't change password",
+    );
   }
 
   OTPFn(findUser.email);
@@ -137,7 +135,6 @@ const socialLogin = async (payload: {
       role: true,
       customerId: true,
       status: true,
-      connectAccountId: true,
       createdAt: true,
       updatedAt: true,
     },
@@ -146,7 +143,7 @@ const socialLogin = async (payload: {
   if (userData) {
     const accessToken = jwtHelpers.generateToken(
       { id: userData.id, email: userData.email, role: userData.role },
-      { expiresIn: "24h" }
+      { expiresIn: "24h" },
     );
     return {
       ...userData,
@@ -158,6 +155,8 @@ const socialLogin = async (payload: {
         ...payload,
         password: "",
         status: "ACTIVE",
+        isSocial: true,
+        isVerified: true,
       },
       select: {
         id: true,
@@ -167,7 +166,6 @@ const socialLogin = async (payload: {
         role: true,
         customerId: true,
         status: true,
-        connectAccountId: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -176,7 +174,7 @@ const socialLogin = async (payload: {
 
     const accessToken = jwtHelpers.generateToken(
       { id: result.id, email: result.email, role: result.role },
-      { expiresIn: "24h" }
+      { expiresIn: "24h" },
     );
     return {
       ...result,

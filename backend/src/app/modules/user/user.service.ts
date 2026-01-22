@@ -3,11 +3,10 @@ import ApiError from "../../error/ApiErrors";
 import { StatusCodes } from "http-status-codes";
 import { compare, hash } from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { OTPFn } from "../../helper/OTPFn";
-import OTPVerify from "../../helper/OTPVerify";
-import { getImageUrl } from "../../helper/uploadFile";
 import { prisma } from "../../../utils/prisma";
 import { jwtHelpers } from "../../helper/jwtHelper";
+import { OTPFn } from "../../helper/OTP/OTPFn";
+import { getImageUrl } from "../../helper/cloudinary";
 
 const createUserIntoDB = async (payload: User) => {
   const findUser = await prisma.user.findUnique({
@@ -51,17 +50,23 @@ const changePasswordIntoDB = async (id: string, payload: any) => {
     },
     select: {
       password: true,
-    }
+      isSocial: true,
+    },
   });
   if (!findUser) {
     throw new ApiError(StatusCodes.NOT_FOUND, "User not found");
   }
-  const comparePassword = await compare(payload.oldPassword, findUser.password);
-  if (!comparePassword) {
+
+  if (findUser.isSocial) {
     throw new ApiError(
       StatusCodes.UNAUTHORIZED,
-      "Invalid password"
+      "Social user can't change password",
     );
+  }
+
+  const comparePassword = await compare(payload.oldPassword, findUser.password);
+  if (!comparePassword) {
+    throw new ApiError(StatusCodes.UNAUTHORIZED, "Invalid password");
   }
 
   const hashedPassword = await hash(payload.newPassword, 10);
@@ -77,7 +82,7 @@ const changePasswordIntoDB = async (id: string, payload: any) => {
 };
 
 const updateUserIntoDB = async (id: string, payload: any, image: any) => {
-  const userImage = image && await getImageUrl(image);
+  const userImage = image && (await getImageUrl(image));
 
   const findUser = await prisma.user.findUnique({
     where: {
@@ -120,6 +125,7 @@ const getMyProfile = async (id: string) => {
       email: true,
       image: true,
       role: true,
+      isSocial: true,
       createdAt: true,
       updatedAt: true,
     },
