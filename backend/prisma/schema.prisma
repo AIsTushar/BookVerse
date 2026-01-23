@@ -21,6 +21,8 @@ model User {
   isVerified Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  cart       Cart?
+  orders     Order[]
 
   @@map("users")
 }
@@ -52,25 +54,89 @@ model Product {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
   title       String
-  slug        String @unique
+  slug        String   @unique
   description String
-
-  price Float
-  stock Int
-
-  author    String
-  publisher String?
-  isbn      String?
-
-  images String[]
-
-  categoryId String   @db.ObjectId
-  category   Category @relation(fields: [categoryId], references: [id])
+  price       Float
+  stock       Int
+  author      String
+  isFeatured  Boolean  @default(false)
+  publisher   String?
+  isbn        String?
+  images      String[]
+  categoryId  String   @db.ObjectId
+  category    Category @relation(fields: [categoryId], references: [id])
 
   isActive Boolean @default(true)
 
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+}
+
+model Cart {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @unique @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  items CartItem[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("carts")
+}
+
+model CartItem {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  cartId String @db.ObjectId
+  cart   Cart   @relation(fields: [cartId], references: [id])
+
+  productId String  @db.ObjectId
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  quantity Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("cartItems")
+}
+
+model Order {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  status OrderStatus @default(PENDING)
+
+  shippingFee Float
+  totalAmount Float
+
+  paymentMethodId String?
+  paymentStatus   String?
+
+  items OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  orderId String @db.ObjectId
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  productId String  @db.ObjectId
+  product   Product @relation(fields: [productId], references: [id])
+
+  quantity Int
+  price    Float // price at purchase time
+
+  @@map("order_items")
 }
 
 enum Role {
@@ -83,4 +149,12 @@ enum Status {
   PENDING
   ACTIVE
   BLOCKED
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
 }

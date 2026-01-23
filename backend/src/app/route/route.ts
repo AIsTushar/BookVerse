@@ -3,6 +3,8 @@ import { userRoutes } from "../modules/user/user.routes";
 import { authRoutes } from "../modules/auth/auth.routes";
 import { CategoryRoutes } from "../modules/category/category.route";
 import { ProductRoutes } from "../modules/product/product.route";
+import { CartRoutes } from "../modules/cart/cart.route";
+import { OrderRoutes } from "../modules/order/order.route";
 
 const router = Router();
 const routes = [
@@ -21,6 +23,14 @@ const routes = [
   {
     path: "/products",
     component: ProductRoutes,
+  },
+  {
+    path: "/carts",
+    component: CartRoutes,
+  },
+  {
+    path: "/orders",
+    component: OrderRoutes,
   },
 ];
 
