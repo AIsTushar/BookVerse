@@ -159,8 +159,20 @@ const getOrders = async (req: Request) => {
     .filterByRange(orderRangeFilter)
     .execute();
 
+  const formattedResults = results.map((order: any) => {
+    return {
+      id: order.id,
+      customer: order.name,
+      items: order.items.length,
+      total: order.totalAmount,
+      payment: order.paymentStatus,
+      status: order.status,
+      createdAt: order.createdAt,
+    };
+  });
+
   const meta = await queryBuilder.countTotal();
-  return { data: results, meta };
+  return { data: formattedResults, meta };
 };
 
 const getMyOrders = async (req: Request) => {

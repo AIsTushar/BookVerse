@@ -2,15 +2,15 @@ import { NestedFilter } from "../../interface/nestedFiltering";
 import { rangeFilteringPrams } from "../../../utils/queryBuilder";
 
 // Fields for basic filtering
-export const orderFilterFields = ["status"];
+export const orderFilterFields = ["status", "paymentStatus"];
 
 // Fields for top-level search
-export const orderSearchFields = [];
+export const orderSearchFields = ["name"];
 
 // Nested filtering config
 export const orderNestedFilters: NestedFilter[] = [
   // { key: "user", searchOption: "search", queryFields: ["name"] },
-  { key: "items.product", searchOption: "search", queryFields: ["title"] },
+  // { key: "items.product", searchOption: "search", queryFields: ["title"] },
 ];
 
 // Array-based filtering

@@ -2,7 +2,7 @@ import { NestedFilter } from "../../interface/nestedFiltering";
 import { rangeFilteringPrams } from "../../../utils/queryBuilder";
 
 // Fields for basic filtering
-export const productFilterFields = ["isFeatured"];
+export const productFilterFields = ["isFeatured", "isActive"];
 
 // Fields for top-level search
 export const productSearchFields = ["title", "author"];
