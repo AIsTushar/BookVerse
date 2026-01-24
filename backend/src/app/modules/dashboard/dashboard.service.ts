@@ -16,7 +16,7 @@ const getStats = async (req: Request) => {
     totalRevenueAgg,
     monthlyRevenue,
   ] = await Promise.all([
-    prisma.user.count(),
+    prisma.user.count({ where: { role: "USER" } }),
 
     prisma.order.count(),
 

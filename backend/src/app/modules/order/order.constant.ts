@@ -10,6 +10,7 @@ export const orderSearchFields = [];
 // Nested filtering config
 export const orderNestedFilters: NestedFilter[] = [
   // { key: "user", searchOption: "search", queryFields: ["name"] },
+  { key: "items.product", searchOption: "search", queryFields: ["title"] },
 ];
 
 // Array-based filtering
@@ -38,4 +39,4 @@ export const orderRangeFilter: rangeFilteringPrams[] = [
 export const orderSelect = {};
 
 // Prisma include configuration
-export const orderInclude = {};
+export const orderInclude = { items: { include: { product: true } } };

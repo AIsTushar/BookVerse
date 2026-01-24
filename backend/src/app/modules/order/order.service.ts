@@ -150,13 +150,11 @@ const getOrders = async (req: Request) => {
   const results = await queryBuilder
     .filter(orderFilterFields)
     .search(orderSearchFields)
-    .arrayFieldHasSome(orderArrayFilterFields)
-    .multiSelectNestedArray(orderMultiSelectNestedArrayFilters)
     .nestedFilter(orderNestedFilters)
     .sort()
     .paginate()
     //.select(orderSelect)
-    .include({ items: { include: { product: true } } })
+    .include(orderInclude)
     .fields()
     .filterByRange(orderRangeFilter)
     .execute();
@@ -177,7 +175,7 @@ const getMyOrders = async (req: Request) => {
     .sort()
     .paginate()
     //.select(orderSelect)
-    .include({ items: { include: { product: true } } })
+    .include(orderInclude)
     .fields()
     .filterByRange(orderRangeFilter)
     .execute();

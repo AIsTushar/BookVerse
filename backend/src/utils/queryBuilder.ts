@@ -27,7 +27,7 @@ class QueryBuilder<T> {
     path: string[],
     value: Record<string, any>,
     index = 0,
-    condition: Record<string, any> = {}
+    condition: Record<string, any> = {},
   ) {
     const key = path[index];
     condition[key] =
@@ -67,7 +67,7 @@ class QueryBuilder<T> {
   constructor(
     query: Record<string, unknown>,
     model: any,
-    staticFilter: Partial<T> = {}
+    staticFilter: Partial<T> = {},
   ) {
     this.model = model; // Prisma model instance
     this.query = query; // Query params
@@ -168,9 +168,10 @@ class QueryBuilder<T> {
                 mode: "insensitive",
               },
             };
-
             return this.buildNestedCondition(pathSegments, condition);
           });
+
+          console.log(nestedCondition, " check nested search query");
 
           this.prismaQuery.where = {
             ...this.prismaQuery?.where,
@@ -184,7 +185,7 @@ class QueryBuilder<T> {
               [key]: { equals: value, mode: "insensitive" },
             };
             return this.buildNestedCondition(pathSegments, condition);
-          }
+          },
         );
 
         this.prismaQuery.where = {
@@ -196,6 +197,7 @@ class QueryBuilder<T> {
 
         const nestedConditions = Object.entries(queryObj).map(
           ([field, value]) => {
+            console.log(field, value, " check nested filter query");
             let condition: Record<string, any> = {};
 
             switch (searchOption) {
@@ -212,7 +214,7 @@ class QueryBuilder<T> {
             }
 
             return this.buildNestedCondition(pathSegments, condition);
-          }
+          },
         );
         this.prismaQuery.where = {
           ...this.prismaQuery?.where,
@@ -226,7 +228,7 @@ class QueryBuilder<T> {
 
   // For single nested relation multiple select (not array)
   multiSelectNestedArray(
-    filters: { field: string; relation: string; matchField?: string }[]
+    filters: { field: string; relation: string; matchField?: string }[],
   ) {
     filters.forEach(({ field, relation, matchField = "slug" }) => {
       const rawValue = this.query[field];
@@ -311,7 +313,7 @@ class QueryBuilder<T> {
           if (dataType === "date") {
             const dateParts = value.split("-");
             const utcDate = new Date(
-              Date.UTC(dateParts[0], Number(dateParts[1]) - 1, dateParts[2])
+              Date.UTC(dateParts[0], Number(dateParts[1]) - 1, dateParts[2]),
             );
             return utcDate;
           }
@@ -330,7 +332,7 @@ class QueryBuilder<T> {
         };
 
         this.applyCondition({ field, nestedField, condition });
-      }
+      },
     );
 
     return this;
@@ -375,7 +377,7 @@ class QueryBuilder<T> {
             },
           },
         };
-      }
+      },
     );
 
     return this;
@@ -416,7 +418,7 @@ class QueryBuilder<T> {
           acc[field] = true;
           return acc;
         },
-        {}
+        {},
       );
     }
     return this;
