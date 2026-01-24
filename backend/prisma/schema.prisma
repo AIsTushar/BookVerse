@@ -111,6 +111,12 @@ model Order {
 
   status OrderStatus @default(PENDING)
 
+  name            String
+  phone           String
+  shippingCity    String
+  shippingAddress String
+  shippingPostal  String
+
   shippingFee Float
   totalAmount Float
 

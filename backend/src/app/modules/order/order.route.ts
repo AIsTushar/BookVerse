@@ -9,7 +9,11 @@ const router = Router();
 
 router
   .route("/")
-  .post(auth(), OrderControllers.createOrder)
+  .post(
+    auth(),
+    validateRequest(OrderValidations.createOrderSchema),
+    OrderControllers.createOrder,
+  )
   .get(auth(Role.ADMIN), OrderControllers.getOrders);
 
 router.route("/me").get(auth(), OrderControllers.getMyOrders);
@@ -17,6 +21,10 @@ router.route("/me").get(auth(), OrderControllers.getMyOrders);
 router
   .route("/:id")
   .get(auth(), OrderControllers.getOrderById)
-  .put(auth(Role.ADMIN), OrderControllers.updateOrder);
+  .put(
+    auth(Role.ADMIN),
+    validateRequest(OrderValidations.updateOrderSchema),
+    OrderControllers.updateOrder,
+  );
 
 export const OrderRoutes = router;

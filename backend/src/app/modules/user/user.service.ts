@@ -6,7 +6,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { prisma } from "../../../utils/prisma";
 import { jwtHelpers } from "../../helper/jwtHelper";
 import { OTPFn } from "../../helper/OTP/OTPFn";
-import { getImageUrl } from "../../helper/cloudinary";
+import { deleteFromCloudinary, getImageUrl } from "../../helper/cloudinary";
 import QueryBuilder from "../../../utils/queryBuilder";
 import { Request } from "express";
 
@@ -93,6 +93,13 @@ const updateUserIntoDB = async (id: string, payload: any, image: any) => {
   });
   if (!findUser) {
     throw new ApiError(StatusCodes.NOT_FOUND, "User not found");
+  }
+
+  if (userImage && findUser.image) {
+    const oldImage = findUser.image;
+    if (oldImage) {
+      await deleteFromCloudinary(oldImage);
+    }
   }
 
   const result = await prisma.user.update({

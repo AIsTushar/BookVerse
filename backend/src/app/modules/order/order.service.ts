@@ -19,7 +19,14 @@ import { createStripeCustomerAcc } from "../../helper/createStripeCustomerAcc";
 
 const createOrder = async (req: Request) => {
   const userId = req.user?.id;
-  const { paymentMethodId } = req.body;
+  const {
+    name,
+    phone,
+    shippingCity,
+    shippingAddress,
+    shippingPostal,
+    paymentMethodId,
+  } = req.body;
 
   if (!paymentMethodId) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "Payment method is required");
@@ -100,6 +107,11 @@ const createOrder = async (req: Request) => {
     const createdOrder = await tx.order.create({
       data: {
         userId,
+        name,
+        phone,
+        shippingCity,
+        shippingAddress,
+        shippingPostal,
         shippingFee,
         totalAmount,
         status: "PAID",

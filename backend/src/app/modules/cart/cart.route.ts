@@ -18,7 +18,11 @@ router
 
 router
   .route("/:id")
-  .put(auth(), CartControllers.editCartItem)
+  .put(
+    auth(),
+    validateRequest(CartValidations.updateCartSchema),
+    CartControllers.editCartItem,
+  )
   .delete(auth(), CartControllers.deleteCartItem);
 
 export const CartRoutes = router;
