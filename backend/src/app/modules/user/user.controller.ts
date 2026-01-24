@@ -68,10 +68,24 @@ const createModaratorController = catchAsync(
   },
 );
 
+const getAllUsersController = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await userServices.getAllUsers(req);
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      message: "Users retrieved successfully",
+      success: true,
+      data: result.data,
+      meta: result.meta,
+    });
+  },
+);
+
 export const userController = {
   createUserController,
   updateUserController,
   changePasswordController,
   getMyProfileController,
   createModaratorController,
+  getAllUsersController,
 };

@@ -18,7 +18,7 @@ router
 
 router
   .route("/:id")
-  .get(auth(), CartControllers.editCartItem)
+  .put(auth(), CartControllers.editCartItem)
   .delete(auth(), CartControllers.deleteCartItem);
 
 export const CartRoutes = router;

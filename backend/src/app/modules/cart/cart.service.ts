@@ -1,24 +1,11 @@
 import { Request } from "express";
 import { prisma } from "../../../utils/prisma";
-import QueryBuilder from "../../../utils/queryBuilder";
-import {
-  cartFilterFields,
-  cartInclude,
-  cartNestedFilters,
-  cartRangeFilter,
-  cartSearchFields,
-  cartMultiSelectNestedArrayFilters,
-  cartArrayFilterFields,
-  cartSelect,
-} from "./cart.constant";
-import config from "../../../config";
 import { StatusCodes } from "http-status-codes";
 import ApiError from "../../error/ApiErrors";
-import { Prisma } from "@prisma/client";
 
 const createCart = async (req: Request) => {
   const userId = req.user?.id;
-  const { productId, quantity } = req.body;
+  const { productId, quantity = 1 } = req.body;
   let cart;
 
   const product = await prisma.product.findUnique({
@@ -121,7 +108,7 @@ const deleteCartItem = async (req: Request) => {
 
 const editCartItem = async (req: Request) => {
   const userId = req.user?.id;
-  const { productId } = req.params;
+  const { id: productId } = req.params;
   const { quantity } = req.body;
 
   if (!userId) {

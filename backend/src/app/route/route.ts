@@ -5,6 +5,7 @@ import { CategoryRoutes } from "../modules/category/category.route";
 import { ProductRoutes } from "../modules/product/product.route";
 import { CartRoutes } from "../modules/cart/cart.route";
 import { OrderRoutes } from "../modules/order/order.route";
+import { DashboardRoutes } from "../modules/dashboard/dashboard.route";
 
 const router = Router();
 const routes = [
@@ -31,6 +32,10 @@ const routes = [
   {
     path: "/orders",
     component: OrderRoutes,
+  },
+  {
+    path: "/dashboard",
+    component: DashboardRoutes,
   },
 ];
 

@@ -15,6 +15,7 @@ import { StatusCodes } from "http-status-codes";
 import ApiError from "../../error/ApiErrors";
 import { OrderStatus, Prisma } from "@prisma/client";
 import { stripe } from "../../../config/stripe";
+import { createStripeCustomerAcc } from "../../helper/createStripeCustomerAcc";
 
 const createOrder = async (req: Request) => {
   const userId = req.user?.id;
@@ -22,6 +23,24 @@ const createOrder = async (req: Request) => {
 
   if (!paymentMethodId) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "Payment method is required");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new ApiError(StatusCodes.NOT_FOUND, "User not found");
+  }
+
+  if (!user.customerId) {
+    await createStripeCustomerAcc(user);
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      "Customer ID not found Please try again!",
+    );
   }
 
   const cart = await prisma.cart.findFirst({
@@ -57,15 +76,17 @@ const createOrder = async (req: Request) => {
   const shippingFee = 50;
   const totalAmount = subtotal + shippingFee;
 
+  // await stripe.paymentMethods.attach(paymentMethodId, {
+  //   customer: user.customerId,
+  // });
+
   const paymentIntent = await stripe.paymentIntents.create({
     amount: Math.round(totalAmount * 100),
-    currency: "bdt",
+    currency: "usd",
     payment_method: paymentMethodId,
     confirm: true,
-    automatic_payment_methods: {
-      enabled: true,
-      allow_redirects: "never",
-    },
+    customer: user.customerId,
+    automatic_payment_methods: { enabled: true, allow_redirects: "never" },
     metadata: {
       userId,
     },
@@ -81,9 +102,9 @@ const createOrder = async (req: Request) => {
         userId,
         shippingFee,
         totalAmount,
-        status: paymentIntent.status === "succeeded" ? "PAID" : "PENDING",
-        paymentMethodId,
-        paymentStatus: paymentIntent.status,
+        status: "PAID",
+        paymentMethodId: paymentMethodId,
+        paymentStatus: "PAID",
         items: {
           create: orderItems,
         },
@@ -109,10 +130,7 @@ const createOrder = async (req: Request) => {
     return createdOrder;
   });
 
-  return {
-    order,
-    paymentIntent,
-  };
+  return order;
 };
 
 const getOrders = async (req: Request) => {
@@ -126,7 +144,7 @@ const getOrders = async (req: Request) => {
     .sort()
     .paginate()
     //.select(orderSelect)
-    //.include(orderInclude)
+    .include({ items: { include: { product: true } } })
     .fields()
     .filterByRange(orderRangeFilter)
     .execute();
@@ -147,7 +165,7 @@ const getMyOrders = async (req: Request) => {
     .sort()
     .paginate()
     //.select(orderSelect)
-    //.include(orderInclude)
+    .include({ items: { include: { product: true } } })
     .fields()
     .filterByRange(orderRangeFilter)
     .execute();
@@ -157,7 +175,10 @@ const getMyOrders = async (req: Request) => {
 };
 
 const getOrderById = async (id: string) => {
-  return prisma.order.findUnique({ where: { id } });
+  return prisma.order.findUnique({
+    where: { id },
+    include: { items: { include: { product: true } } },
+  });
 };
 
 const updateOrder = async (req: Request) => {

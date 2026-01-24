@@ -7,6 +7,8 @@ import { prisma } from "../../../utils/prisma";
 import { jwtHelpers } from "../../helper/jwtHelper";
 import { OTPFn } from "../../helper/OTP/OTPFn";
 import { getImageUrl } from "../../helper/cloudinary";
+import QueryBuilder from "../../../utils/queryBuilder";
+import { Request } from "express";
 
 const createUserIntoDB = async (payload: User) => {
   const findUser = await prisma.user.findUnique({
@@ -139,7 +141,7 @@ const getMyProfile = async (id: string) => {
 };
 
 const createModarator = async (payload: any) => {
-  const { name, email, password } = payload;
+  const { email } = payload;
 
   const findUser = await prisma.user.findUnique({
     where: {
@@ -170,10 +172,28 @@ const createModarator = async (payload: any) => {
   return result;
 };
 
+const getAllUsers = async (req: Request) => {
+  const queryBuilder = new QueryBuilder(req.query, prisma.user, {
+    role: {
+      not: "ADMIN",
+    },
+  });
+  const result = await queryBuilder
+    .filter(["role", "status"])
+    .search(["name", "email"])
+    .paginate()
+    .execute();
+
+  const meta = await queryBuilder.countTotal();
+
+  return { data: result, meta };
+};
+
 export const userServices = {
   createUserIntoDB,
   updateUserIntoDB,
   changePasswordIntoDB,
   getMyProfile,
   createModarator,
+  getAllUsers,
 };

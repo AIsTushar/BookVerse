@@ -1,17 +1,15 @@
-
 import { NestedFilter } from "../../interface/nestedFiltering";
 import { rangeFilteringPrams } from "../../../utils/queryBuilder";
 
 // Fields for basic filtering
-export const productFilterFields = [];
+export const productFilterFields = ["isFeatured"];
 
 // Fields for top-level search
-export const productSearchFields = [];
+export const productSearchFields = ["title", "author"];
 
 // Nested filtering config
 export const productNestedFilters: NestedFilter[] = [
-	// { key: "user", searchOption: "search", queryFields: ["name"] },
-
+  // { key: "user", searchOption: "search", queryFields: ["name"] },
 ];
 
 // Array-based filtering
@@ -28,20 +26,22 @@ export const productMultiSelectNestedArrayFilters = [
 
 // Range-based filtering config
 export const productRangeFilter: rangeFilteringPrams[] = [
-	{
-		field: "createdAt",
-		maxQueryKey: "maxDate",
-		minQueryKey: "minDate",
-		dataType: "date",
-	},
+  {
+    field: "createdAt",
+    maxQueryKey: "maxDate",
+    minQueryKey: "minDate",
+    dataType: "date",
+  },
+  {
+    field: "price",
+    maxQueryKey: "maxPrice",
+    minQueryKey: "minPrice",
+    dataType: "number",
+  },
 ];
 
 // Prisma select configuration
-export const productSelect = {
- 
-};
+export const productSelect = {};
 
 // Prisma include configuration
-export const productInclude = {
-	
-};
+export const productInclude = {};
