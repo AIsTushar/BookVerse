@@ -1,82 +1,196 @@
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  ShoppingBag, 
-  Users, 
-  DollarSign, 
+import { useState, useEffect } from "react";
+import {
+  ShoppingBag,
+  Users,
+  DollarSign,
   Package,
-  ArrowUpRight,
-  ArrowDownRight,
   MoreHorizontal,
-  Eye
 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import AdminLayout from "@/components/admin/AdminLayout";
 
 interface StatCardProps {
   title: string;
   value: string;
-  change: number;
   icon: React.ReactNode;
-  trend: "up" | "down";
 }
 
-const StatCard = ({ title, value, change, icon, trend }: StatCardProps) => (
+const StatCard = ({ title, value, icon }: StatCardProps) => (
   <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
     <CardContent className="p-6">
       <div className="flex items-start justify-between">
         <div className="space-y-2">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
           <p className="text-2xl font-bold tracking-tight">{value}</p>
-          <div className="flex items-center gap-1">
-            {trend === "up" ? (
-              <ArrowUpRight className="h-4 w-4 text-success" />
-            ) : (
-              <ArrowDownRight className="h-4 w-4 text-destructive" />
-            )}
-            <span className={`text-sm font-medium ${trend === "up" ? "text-success" : "text-destructive"}`}>
-              {change}%
-            </span>
-            <span className="text-sm text-muted-foreground">vs last month</span>
-          </div>
         </div>
-        <div className="p-3 bg-primary/10 rounded-xl">
-          {icon}
-        </div>
+        <div className="p-3 bg-primary/10 rounded-xl">{icon}</div>
       </div>
     </CardContent>
   </Card>
 );
 
 const recentOrders = [
-  { id: "#ORD-7821", customer: "Sarah Johnson", product: "Winter Blazer", amount: "$189.00", status: "Delivered", avatar: "SJ" },
-  { id: "#ORD-7820", customer: "Michael Chen", product: "Casual Shirt", amount: "$79.00", status: "Processing", avatar: "MC" },
-  { id: "#ORD-7819", customer: "Emily Davis", product: "Women's Hoodie", amount: "$129.00", status: "Shipped", avatar: "ED" },
-  { id: "#ORD-7818", customer: "James Wilson", product: "Denim Jacket", amount: "$249.00", status: "Pending", avatar: "JW" },
-  { id: "#ORD-7817", customer: "Priya Patel", product: "Cotton Pants", amount: "$89.00", status: "Delivered", avatar: "PP" },
-];
-
-const topProducts = [
-  { name: "Men's Winter Collection Blazer", category: "Blazers & Jackets", sales: 234, revenue: "$44,226", image: "/placeholder.svg" },
-  { name: "Women's Casual Hoodie", category: "Sweaters & Hoodies", sales: 189, revenue: "$24,381", image: "/placeholder.svg" },
-  { name: "Classic Checkered Shirt", category: "Casual Shirts", sales: 156, revenue: "$12,324", image: "/placeholder.svg" },
-  { name: "Slim Fit Casual Pants", category: "Casual Pants", sales: 143, revenue: "$12,727", image: "/placeholder.svg" },
+  {
+    id: "#ORD-7821",
+    customer: "Sarah Johnson",
+    product: "Winter Blazer",
+    amount: "$189.00",
+    status: "Delivered",
+    avatar: "SJ",
+  },
+  {
+    id: "#ORD-7820",
+    customer: "Michael Chen",
+    product: "Casual Shirt",
+    amount: "$79.00",
+    status: "Processing",
+    avatar: "MC",
+  },
+  {
+    id: "#ORD-7819",
+    customer: "Emily Davis",
+    product: "Women's Hoodie",
+    amount: "$129.00",
+    status: "Shipped",
+    avatar: "ED",
+  },
+  {
+    id: "#ORD-7818",
+    customer: "James Wilson",
+    product: "Denim Jacket",
+    amount: "$249.00",
+    status: "Pending",
+    avatar: "JW",
+  },
+  {
+    id: "#ORD-7817",
+    customer: "Priya Patel",
+    product: "Cotton Pants",
+    amount: "$89.00",
+    status: "Delivered",
+    avatar: "PP",
+  },
 ];
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case "Delivered": return "bg-success/10 text-success border-success/20";
-    case "Shipped": return "bg-info/10 text-info border-info/20";
-    case "Processing": return "bg-warning/10 text-warning border-warning/20";
-    case "Pending": return "bg-muted text-muted-foreground";
-    default: return "bg-muted text-muted-foreground";
+    case "Delivered":
+      return "bg-success/10 text-success border-success/20";
+    case "Shipped":
+      return "bg-info/10 text-info border-info/20";
+    case "Processing":
+      return "bg-warning/10 text-warning border-warning/20";
+    case "Pending":
+      return "bg-muted text-muted-foreground";
+    default:
+      return "bg-muted text-muted-foreground";
   }
 };
 
+// Mock API function for chart data
+const fetchChartData = async (year: string) => {
+  const dataByYear: Record<string, any> = {
+    "2024": {
+      monthlyRevenue: [
+        12000, 13500, 11800, 14200, 16000, 18500, 19200, 21000, 17800, 16500,
+        15200, 14800,
+      ],
+    },
+    "2025": {
+      monthlyRevenue: [
+        22000, 24500, 23000, 26000, 28500, 31000, 33000, 35200, 32000, 29800,
+        27500, 26100,
+      ],
+    },
+    "2026": {
+      monthlyRevenue: [
+        32000, 35000, 38500, 41000, 44200, 47500, 51000, 53200, 49800, 46500,
+        43200, 41000,
+      ],
+    },
+  };
+
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  return dataByYear[year] || dataByYear["2026"];
+};
+
 const AdminDashboard = () => {
+  const [selectedYear, setSelectedYear] = useState("2026");
+  const [monthlyRevenue, setMonthlyRevenue] = useState<number[]>([]);
+  const [chartLoading, setChartLoading] = useState(true);
+
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  // This would come from your backend API
+  const backendData = {
+    success: true,
+    message: "Stats retrieved successfully",
+    data: {
+      stats: {
+        totalUsers: 2,
+        totalOrders: 0,
+        totalDeliveredOrders: 0,
+        totalRevenue: 0,
+      },
+      chart: {
+        year: "2026",
+        monthlyRevenue: Array(12).fill(0),
+      },
+    },
+  };
+
+  useEffect(() => {
+    const loadChartData = async () => {
+      setChartLoading(true);
+      const data = await fetchChartData(selectedYear);
+      setMonthlyRevenue(data.monthlyRevenue);
+      setChartLoading(false);
+    };
+
+    loadChartData();
+  }, [selectedYear]);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const statsData = backendData.data.stats;
+  const maxRevenue = Math.max(...monthlyRevenue, 1);
+
   return (
     <AdminLayout>
       <div className="space-y-8">
@@ -84,7 +198,9 @@ const AdminDashboard = () => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground">Welcome back! Here's your store overview.</p>
+            <p className="text-muted-foreground">
+              Welcome back! Here's your store overview.
+            </p>
           </div>
           <div className="flex items-center gap-3">
             <Button variant="outline" size="sm">
@@ -101,156 +217,194 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             title="Total Revenue"
-            value="$124,592"
-            change={12.5}
-            trend="up"
+            value={formatCurrency(statsData.totalRevenue)}
             icon={<DollarSign className="h-5 w-5 text-primary" />}
           />
           <StatCard
             title="Total Orders"
-            value="1,842"
-            change={8.2}
-            trend="up"
+            value={statsData.totalOrders.toLocaleString()}
             icon={<ShoppingBag className="h-5 w-5 text-primary" />}
           />
           <StatCard
             title="Total Customers"
-            value="12,459"
-            change={5.1}
-            trend="up"
+            value={statsData.totalUsers.toLocaleString()}
             icon={<Users className="h-5 w-5 text-primary" />}
           />
           <StatCard
-            title="Pending Orders"
-            value="24"
-            change={-3.2}
-            trend="down"
+            title="Delivered Orders"
+            value={statsData.totalDeliveredOrders.toLocaleString()}
             icon={<Package className="h-5 w-5 text-primary" />}
           />
         </div>
 
-        {/* Content Grid */}
+        {/* Side-by-side Section: Chart (2/3) + Orders (1/3) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Recent Orders */}
+          {/* Revenue Chart - Takes 2/3 width */}
           <Card className="lg:col-span-2 border-0 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-4">
               <div>
-                <CardTitle className="text-lg font-semibold">Recent Orders</CardTitle>
+                <CardTitle className="text-lg font-semibold">
+                  Monthly Revenue
+                </CardTitle>
+                <CardDescription>Revenue overview by month</CardDescription>
+              </div>
+              <Select value={selectedYear} onValueChange={setSelectedYear}>
+                <SelectTrigger className="w-[120px]">
+                  <SelectValue placeholder="Year" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2024">2024</SelectItem>
+                  <SelectItem value="2025">2025</SelectItem>
+                  <SelectItem value="2026">2026</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardHeader>
+            <CardContent>
+              {chartLoading ? (
+                <div className="h-64 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                    <p className="text-muted-foreground mt-3">
+                      Loading chart data...
+                    </p>
+                  </div>
+                </div>
+              ) : maxRevenue === 0 ? (
+                <div className="h-64 flex items-center justify-center">
+                  <div className="text-center text-muted-foreground">
+                    No revenue data available for {selectedYear}
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Chart container */}
+                  <div className="relative">
+                    {/* Y-axis labels */}
+                    <div className="absolute left-0 top-0 bottom-0 w-16 flex flex-col justify-between text-right pr-4">
+                      {[4, 3, 2, 1, 0].map((value) => (
+                        <div
+                          key={value}
+                          className="text-xs text-muted-foreground"
+                        >
+                          {formatCurrency((maxRevenue / 4) * value)}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Chart bars */}
+                    <div className="ml-16 h-64">
+                      <div className="h-full flex items-end justify-between px-4 pt-8 pb-6">
+                        {months.map((month, index) => {
+                          const revenue = monthlyRevenue[index] || 0;
+                          const heightPercent = (revenue / maxRevenue) * 100;
+
+                          return (
+                            <div
+                              key={month}
+                              className="flex flex-col items-center justify-end flex-1 h-full px-1"
+                            >
+                              {/* Bar */}
+                              <div
+                                className="w-full bg-gradient-to-t from-emerald-500 to-emerald-400 rounded-t transition-all duration-300 hover:from-emerald-600 hover:to-emerald-500 relative group"
+                                style={{
+                                  height: `${heightPercent}%`,
+                                  minHeight: revenue > 0 ? "4px" : "0",
+                                }}
+                              >
+                                {/* Tooltip */}
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                                  {formatCurrency(revenue)}
+                                </div>
+                              </div>
+
+                              {/* Month label */}
+                              <div className="mt-2 text-xs text-muted-foreground">
+                                {month}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Summary */}
+                  <div className="flex items-center justify-between pt-4 border-t">
+                    <div className="text-sm text-muted-foreground">
+                      Total:{" "}
+                      <span className="font-semibold text-foreground">
+                        {formatCurrency(
+                          monthlyRevenue.reduce((a, b) => a + b, 0),
+                        )}
+                      </span>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Peak month: {months[monthlyRevenue.indexOf(maxRevenue)]}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Recent Orders - Takes 1/3 width */}
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between pb-4">
+              <div>
+                <CardTitle className="text-lg font-semibold">
+                  Recent Orders
+                </CardTitle>
                 <CardDescription>Latest customer orders</CardDescription>
               </div>
               <Button variant="ghost" size="sm" className="text-primary">
                 View All
-                <ArrowUpRight className="h-4 w-4 ml-1" />
               </Button>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {recentOrders.map((order) => (
-                  <div key={order.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback className="bg-primary/10 text-primary text-sm font-medium">
-                          {order.avatar}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium text-sm">{order.customer}</p>
-                        <p className="text-xs text-muted-foreground">{order.product}</p>
+            <CardContent className="p-0">
+              {recentOrders.length > 0 ? (
+                <div className="space-y-0">
+                  {recentOrders.map((order) => (
+                    <div
+                      key={order.id}
+                      className="flex items-center justify-between p-4 border-b last:border-b-0 hover:bg-muted/30 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-9 w-9">
+                          <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
+                            {order.avatar}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm truncate">
+                            {order.customer}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {order.product}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-1">
+                        <Badge
+                          variant="outline"
+                          className={`text-xs font-medium px-2 py-0.5 ${getStatusColor(order.status)}`}
+                        >
+                          {order.status}
+                        </Badge>
+                        <span className="font-semibold text-sm">
+                          {order.amount}
+                        </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <Badge variant="outline" className={`text-xs font-medium ${getStatusColor(order.status)}`}>
-                        {order.status}
-                      </Badge>
-                      <span className="font-semibold text-sm w-20 text-right">{order.amount}</span>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-8 text-center">
+                  <p className="text-muted-foreground">
+                    No recent orders found
+                  </p>
+                </div>
+              )}
             </CardContent>
-          </Card>
-
-          {/* Top Products */}
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between pb-4">
-              <div>
-                <CardTitle className="text-lg font-semibold">Top Products</CardTitle>
-                <CardDescription>Best sellers this month</CardDescription>
-              </div>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {topProducts.map((product, index) => (
-                  <div key={index} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                    <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center overflow-hidden">
-                      <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm truncate">{product.name}</p>
-                      <p className="text-xs text-muted-foreground">{product.category}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-sm">{product.revenue}</p>
-                      <p className="text-xs text-muted-foreground">{product.sales} sales</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Quick Stats Row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="border-0 shadow-sm p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-success/10 rounded-lg">
-                <TrendingUp className="h-4 w-4 text-success" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Conversion Rate</p>
-                <p className="text-lg font-bold">3.24%</p>
-              </div>
-            </div>
-          </Card>
-          <Card className="border-0 shadow-sm p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-info/10 rounded-lg">
-                <Eye className="h-4 w-4 text-info" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Page Views</p>
-                <p className="text-lg font-bold">45.2K</p>
-              </div>
-            </div>
-          </Card>
-          <Card className="border-0 shadow-sm p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-warning/10 rounded-lg">
-                <ShoppingBag className="h-4 w-4 text-warning" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Avg. Order Value</p>
-                <p className="text-lg font-bold">$67.80</p>
-              </div>
-            </div>
-          </Card>
-          <Card className="border-0 shadow-sm p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Users className="h-4 w-4 text-primary" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Active Users</p>
-                <p className="text-lg font-bold">892</p>
-              </div>
-            </div>
           </Card>
         </div>
       </div>

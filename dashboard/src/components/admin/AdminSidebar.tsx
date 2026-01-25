@@ -37,8 +37,7 @@ const mainNavItems = [
 ];
 
 const managementItems = [
-  { title: "Media Library", url: "/admin/medialibrary", icon: ImageIcon },
-  { title: "Promotions", url: "/admin/promotions", icon: Tag },
+  // { title: "Promotions", url: "/admin/promotions", icon: Tag },
   { title: "Analytics", url: "/admin/analytics", icon: BarChart3 },
   { title: "Settings", url: "/admin/settings", icon: Settings },
 ];
@@ -51,7 +50,7 @@ const AdminSidebar = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <Sidebar 
+    <Sidebar
       className="border-r border-sidebar-border bg-sidebar"
       collapsible="icon"
     >
@@ -59,12 +58,16 @@ const AdminSidebar = () => {
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-3">
           <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-lg">Y</span>
+            <span className="text-primary-foreground font-bold text-lg">B</span>
           </div>
           {!collapsed && (
             <div>
-              <h1 className="font-bold text-sidebar-foreground tracking-wider text-sm">YELLOW</h1>
-              <p className="text-[10px] text-sidebar-foreground/60 tracking-widest">ADMIN</p>
+              <h1 className="font-bold text-sidebar-foreground tracking-wider text-sm">
+                BOOK
+              </h1>
+              <p className="text-[10px] text-sidebar-foreground/60 tracking-widest">
+                ADMIN
+              </p>
             </div>
           )}
         </div>
@@ -82,18 +85,22 @@ const AdminSidebar = () => {
             <SidebarMenu>
               {mainNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
+                  <SidebarMenuButton
                     asChild
                     isActive={isActive(item.url)}
                     className="h-10"
                   >
-                    <NavLink 
-                      to={item.url} 
+                    <NavLink
+                      to={item.url}
                       className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
                       activeClassName="bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
                     >
                       <item.icon className="h-4 w-4 shrink-0" />
-                      {!collapsed && <span className="text-sm font-medium">{item.title}</span>}
+                      {!collapsed && (
+                        <span className="text-sm font-medium">
+                          {item.title}
+                        </span>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -111,18 +118,22 @@ const AdminSidebar = () => {
             <SidebarMenu>
               {managementItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
+                  <SidebarMenuButton
                     asChild
                     isActive={isActive(item.url)}
                     className="h-10"
                   >
-                    <NavLink 
-                      to={item.url} 
+                    <NavLink
+                      to={item.url}
                       className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
                       activeClassName="bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
                     >
                       <item.icon className="h-4 w-4 shrink-0" />
-                      {!collapsed && <span className="text-sm font-medium">{item.title}</span>}
+                      {!collapsed && (
+                        <span className="text-sm font-medium">
+                          {item.title}
+                        </span>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -143,8 +154,12 @@ const AdminSidebar = () => {
           </Avatar>
           {!collapsed && (
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-sidebar-foreground truncate">Admin User</p>
-              <p className="text-xs text-sidebar-foreground/60 truncate">admin@yellow.com</p>
+              <p className="text-sm font-medium text-sidebar-foreground truncate">
+                Admin User
+              </p>
+              <p className="text-xs text-sidebar-foreground/60 truncate">
+                admin123@gmail.com
+              </p>
             </div>
           )}
           {!collapsed && (

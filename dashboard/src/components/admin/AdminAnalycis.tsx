@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Users, Package, Calendar } from "lucide-react";
+import { useState, useEffect } from "react";
+import { DollarSign, ShoppingCart, Users, Package } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -10,249 +10,296 @@ import {
 } from "@/components/ui/select";
 import AdminLayout from "./AdminLayout";
 
+// Mock API with realistic data
+const fetchStats = async (year: string) => {
+  const dataByYear: Record<string, any> = {
+    "2024": {
+      stats: {
+        totalUsers: 1280,
+        totalOrders: 3420,
+        totalDeliveredOrders: 3210,
+        totalRevenue: 187500,
+      },
+      chart: {
+        year: "2024",
+        monthlyRevenue: [
+          12000, 13500, 11800, 14200, 16000, 18500, 19200, 21000, 17800, 16500,
+          15200, 14800,
+        ],
+      },
+    },
+    "2025": {
+      stats: {
+        totalUsers: 2150,
+        totalOrders: 5890,
+        totalDeliveredOrders: 5620,
+        totalRevenue: 312400,
+      },
+      chart: {
+        year: "2025",
+        monthlyRevenue: [
+          22000, 24500, 23000, 26000, 28500, 31000, 33000, 35200, 32000, 29800,
+          27500, 26100,
+        ],
+      },
+    },
+    "2026": {
+      stats: {
+        totalUsers: 2840,
+        totalOrders: 7620,
+        totalDeliveredOrders: 7100,
+        totalRevenue: 428900,
+      },
+      chart: {
+        year: "2026",
+        monthlyRevenue: [
+          32000, 35000, 38500, 41000, 44200, 47500, 51000, 53200, 49800, 46500,
+          43200, 41000,
+        ],
+      },
+    },
+  };
+
+  await new Promise((resolve) => setTimeout(resolve, 400));
+  return {
+    success: true,
+    message: "Stats retrieved successfully",
+    data: dataByYear[year] || dataByYear["2026"],
+  };
+};
+
 const AdminAnalytics = () => {
-  const [timeRange, setTimeRange] = useState("7days");
+  const [selectedYear, setSelectedYear] = useState("2026");
+  const [statsData, setStatsData] = useState({
+    totalUsers: 0,
+    totalOrders: 0,
+    totalDeliveredOrders: 0,
+    totalRevenue: 0,
+  });
+  const [monthlyRevenue, setMonthlyRevenue] = useState<number[]>(
+    Array(12).fill(0),
+  );
+  const [loading, setLoading] = useState(true);
 
-  const stats = [
-    {
-      title: "Total Revenue",
-      value: "$45,231",
-      change: "+20.1%",
-      trend: "up",
-      icon: DollarSign,
-    },
-    {
-      title: "Total Orders",
-      value: "1,234",
-      change: "+15.3%",
-      trend: "up",
-      icon: ShoppingCart,
-    },
-    {
-      title: "Total Customers",
-      value: "892",
-      change: "+8.2%",
-      trend: "up",
-      icon: Users,
-    },
-    {
-      title: "Products Sold",
-      value: "3,456",
-      change: "-2.4%",
-      trend: "down",
-      icon: Package,
-    },
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
 
-  const salesData = [
-    { day: "Mon", revenue: 4200, orders: 45 },
-    { day: "Tue", revenue: 5100, orders: 52 },
-    { day: "Wed", revenue: 4800, orders: 48 },
-    { day: "Thu", revenue: 6200, orders: 65 },
-    { day: "Fri", revenue: 7100, orders: 72 },
-    { day: "Sat", revenue: 8500, orders: 89 },
-    { day: "Sun", revenue: 6800, orders: 71 },
-  ];
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchStats(selectedYear);
+        if (response.success) {
+          setStatsData(response.data.stats);
+          setMonthlyRevenue(response.data.chart.monthlyRevenue);
+        }
+      } catch (error) {
+        console.error("Failed to load stats:", error);
+        setStatsData({
+          totalUsers: 0,
+          totalOrders: 0,
+          totalDeliveredOrders: 0,
+          totalRevenue: 0,
+        });
+        setMonthlyRevenue(Array(12).fill(0));
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const topProducts = [
-    { name: "Men's Winter Collection Blazer", sales: 234, revenue: 44226 },
-    { name: "Women's Casual Hoodie", sales: 189, revenue: 24381 },
-    { name: "Classic Checkered Shirt", sales: 156, revenue: 12324 },
-    { name: "Slim Fit Casual Pants", sales: 145, revenue: 12905 },
-    { name: "Cotton V-Neck T-Shirt", sales: 132, revenue: 5148 },
-  ];
+    loadStats();
+  }, [selectedYear]);
 
-  const recentOrders = [
-    { id: "ORD-001", customer: "John Doe", amount: 347.00, status: "Delivered" },
-    { id: "ORD-002", customer: "Jane Smith", amount: 218.00, status: "Processing" },
-    { id: "ORD-003", customer: "Mike Johnson", amount: 159.00, status: "Shipped" },
-    { id: "ORD-004", customer: "Sarah Williams", amount: 456.00, status: "Pending" },
-  ];
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
 
-  const maxRevenue = Math.max(...salesData.map(d => d.revenue));
+  const maxRevenue = Math.max(...monthlyRevenue, 1);
 
   return (
     <AdminLayout>
-        <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Analytics</h1>
-          <p className="text-muted-foreground mt-1">Track your store performance</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue />
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">Analytics</h1>
+            <p className="text-muted-foreground mt-1">
+              Track your store performance
+            </p>
+          </div>
+          <Select value={selectedYear} onValueChange={setSelectedYear}>
+            <SelectTrigger className="w-[130px]">
+              <SelectValue placeholder="Select Year" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="7days">Last 7 days</SelectItem>
-              <SelectItem value="30days">Last 30 days</SelectItem>
-              <SelectItem value="90days">Last 90 days</SelectItem>
-              <SelectItem value="12months">Last 12 months</SelectItem>
+              <SelectItem value="2024">2024</SelectItem>
+              <SelectItem value="2025">2025</SelectItem>
+              <SelectItem value="2026">2026</SelectItem>
             </SelectContent>
           </Select>
         </div>
-      </div>
 
-      {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.title}>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {stat.title}
-                </CardTitle>
-                <Icon className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <div className="flex items-center gap-1 mt-1">
-                  {stat.trend === "up" ? (
-                    <TrendingUp className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <TrendingDown className="h-4 w-4 text-red-600" />
-                  )}
-                  <span
-                    className={`text-xs font-medium ${
-                      stat.trend === "up" ? "text-green-600" : "text-red-600"
-                    }`}
-                  >
-                    {stat.change}
-                  </span>
-                  <span className="text-xs text-muted-foreground">from last period</span>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+        {/* Stats Grid */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total Revenue
+              </CardTitle>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {loading ? "..." : formatCurrency(statsData.totalRevenue)}
+              </div>
+            </CardContent>
+          </Card>
 
-      {/* Revenue Chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Revenue Overview</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {salesData.map((item) => (
-              <div key={item.day} className="flex items-center gap-4">
-                <div className="w-12 text-sm font-medium">{item.day}</div>
-                <div className="flex-1">
-                  <div className="h-8 bg-muted rounded-md overflow-hidden">
-                    <div
-                      className="h-full bg-primary flex items-center justify-end pr-2 text-xs text-primary-foreground font-medium transition-all"
-                      style={{ width: `${(item.revenue / maxRevenue) * 100}%` }}
-                    >
-                      ${item.revenue.toLocaleString()}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total Orders
+              </CardTitle>
+              <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {loading ? "..." : statsData.totalOrders.toLocaleString()}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total Customers
+              </CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {loading ? "..." : statsData.totalUsers.toLocaleString()}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Delivered Orders
+              </CardTitle>
+              <Package className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {loading
+                  ? "..."
+                  : statsData.totalDeliveredOrders.toLocaleString()}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Revenue Chart - FIXED */}
+        <Card>
+          <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <CardTitle>Monthly Revenue</CardTitle>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Year:</span>
+              <Select value={selectedYear} onValueChange={setSelectedYear}>
+                <SelectTrigger className="w-[120px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2024">2024</SelectItem>
+                  <SelectItem value="2025">2025</SelectItem>
+                  <SelectItem value="2026">2026</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="relative">
+              {/* Y-axis labels */}
+              <div className="absolute left-0 top-0 bottom-16 w-16 flex flex-col justify-between text-right pr-4">
+                {[4, 3, 2, 1, 0].map((value) => (
+                  <div key={value} className="text-xs text-muted-foreground">
+                    {formatCurrency((maxRevenue / 4) * value)}
+                  </div>
+                ))}
+              </div>
+
+              {/* Chart container */}
+              <div className="ml-16 h-64">
+                {loading ? (
+                  <div className="h-full flex items-center justify-center">
+                    <div className="text-muted-foreground">
+                      Loading chart...
                     </div>
                   </div>
-                </div>
-                <div className="w-16 text-sm text-muted-foreground text-right">
-                  {item.orders} orders
-                </div>
+                ) : maxRevenue === 0 ? (
+                  <div className="h-full flex items-center justify-center">
+                    <div className="text-muted-foreground">
+                      No revenue data for {selectedYear}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="h-full flex items-end justify-between px-4 pt-8 pb-6">
+                    {months.map((month, index) => {
+                      const revenue = monthlyRevenue[index] || 0;
+                      // Calculate height as percentage of maxRevenue
+                      const heightPercent = (revenue / maxRevenue) * 100;
+
+                      return (
+                        <div
+                          key={month}
+                          className="flex flex-col items-center justify-end flex-1 h-full px-1"
+                        >
+                          {/* Bar */}
+                          <div
+                            className="w-full bg-emerald-500 rounded-t transition-all duration-300 hover:bg-emerald-600 relative group"
+                            style={{
+                              height: `${heightPercent}%`,
+                              minHeight: revenue > 0 ? "4px" : "0",
+                            }}
+                          >
+                            {/* Tooltip */}
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                              {formatCurrency(revenue)}
+                            </div>
+                          </div>
+
+                          {/* Month label */}
+                          <div className="mt-2 text-xs text-muted-foreground">
+                            {month}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Top Products */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Top Selling Products</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {topProducts.map((product, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="font-medium text-sm">{product.name}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {product.sales} units sold
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold">${product.revenue.toLocaleString()}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Orders */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Orders</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentOrders.map((order) => (
-                <div key={order.id} className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-sm">{order.id}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{order.customer}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold">${order.amount.toFixed(2)}</p>
-                    <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${
-                        order.status === "Delivered"
-                          ? "bg-green-100 text-green-800"
-                          : order.status === "Processing"
-                          ? "bg-blue-100 text-blue-800"
-                          : order.status === "Shipped"
-                          ? "bg-purple-100 text-purple-800"
-                          : "bg-yellow-100 text-yellow-800"
-                      }`}
-                    >
-                      {order.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
             </div>
           </CardContent>
         </Card>
       </div>
-
-      {/* Category Performance */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Category Performance</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[
-              { name: "Blazers & Jackets", sales: 324, percentage: 28 },
-              { name: "T-Shirts", sales: 289, percentage: 25 },
-              { name: "Casual Pants", sales: 245, percentage: 21 },
-              { name: "Sweaters & Hoodies", sales: 187, percentage: 16 },
-              { name: "Casual Shirts", sales: 112, percentage: 10 },
-            ].map((category) => (
-              <div key={category.name}>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">{category.name}</span>
-                  <span className="text-sm text-muted-foreground">
-                    {category.sales} sales ({category.percentage}%)
-                  </span>
-                </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-primary rounded-full transition-all"
-                    style={{ width: `${category.percentage}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
     </AdminLayout>
   );
 };

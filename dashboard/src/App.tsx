@@ -14,7 +14,6 @@ import AdminCustomers from "./pages/admin/AdminCustomer";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminAnalytics from "./components/admin/AdminAnalycis";
 import AdminPromotions from "./components/admin/AdminPromotion";
-import AdminMediaLibrary from "./pages/admin/AdminMediaLibray";
 
 const queryClient = new QueryClient();
 
@@ -27,7 +26,7 @@ const App = () => (
         <Routes>
           {/* Redirect root to admin login for now */}
           <Route path="/" element={<Navigate to="/admin" replace />} />
-          
+
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -38,8 +37,7 @@ const App = () => (
           <Route path="/admin/settings" element={<AdminSettings />} />
           <Route path="/admin/analytics" element={<AdminAnalytics />} />
           <Route path="/admin/promotions" element={<AdminPromotions />} />
-          <Route path="/admin/medialibrary" element={<AdminMediaLibrary />} />
-          
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

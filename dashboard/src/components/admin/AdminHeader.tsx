@@ -28,22 +28,22 @@ const AdminHeader = () => {
         <SidebarTrigger className="lg:hidden">
           <Menu className="h-5 w-5" />
         </SidebarTrigger>
-        
+
         {/* Search */}
-        <div className="hidden md:flex items-center relative max-w-md">
+        {/* <div className="hidden md:flex items-center relative max-w-md">
           <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
           <Input 
             placeholder="Search products, orders, customers..." 
             className="pl-10 w-80 bg-muted/50 border-0 focus-visible:ring-1"
           />
-        </div>
+        </div> */}
       </div>
 
       <div className="flex items-center gap-2">
         {/* Mobile Search */}
-        <Button variant="ghost" size="icon" className="md:hidden">
+        {/* <Button variant="ghost" size="icon" className="md:hidden">
           <Search className="h-5 w-5" />
-        </Button>
+        </Button> */}
 
         {/* Theme Toggle */}
         <Button variant="ghost" size="icon" onClick={toggleTheme}>
@@ -51,7 +51,7 @@ const AdminHeader = () => {
         </Button>
 
         {/* Notifications */}
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
@@ -65,18 +65,24 @@ const AdminHeader = () => {
             <DropdownMenuSeparator />
             <DropdownMenuItem className="flex flex-col items-start gap-1 p-3">
               <p className="font-medium text-sm">New order received</p>
-              <p className="text-xs text-muted-foreground">Order #7823 - $189.00</p>
+              <p className="text-xs text-muted-foreground">
+                Order #7823 - $189.00
+              </p>
             </DropdownMenuItem>
             <DropdownMenuItem className="flex flex-col items-start gap-1 p-3">
               <p className="font-medium text-sm">Low stock alert</p>
-              <p className="text-xs text-muted-foreground">Winter Blazer - 5 items left</p>
+              <p className="text-xs text-muted-foreground">
+                Winter Blazer - 5 items left
+              </p>
             </DropdownMenuItem>
             <DropdownMenuItem className="flex flex-col items-start gap-1 p-3">
               <p className="font-medium text-sm">New customer registered</p>
-              <p className="text-xs text-muted-foreground">john.doe@email.com</p>
+              <p className="text-xs text-muted-foreground">
+                john.doe@email.com
+              </p>
             </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          </DropdownMenuContent> */}
+        {/* </DropdownMenu> */}
 
         {/* User Menu */}
         <DropdownMenu>
@@ -93,7 +99,9 @@ const AdminHeader = () => {
             <DropdownMenuLabel>
               <div className="flex flex-col">
                 <span>Admin User</span>
-                <span className="text-xs font-normal text-muted-foreground">admin@yellowclothing.com</span>
+                <span className="text-xs font-normal text-muted-foreground">
+                  admin123@gmail.com
+                </span>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
