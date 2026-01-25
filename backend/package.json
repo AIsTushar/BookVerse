@@ -11,7 +11,7 @@
     "prettier": "prettier --ignore-path .gitignore --write \"./src/**/*.+(js|ts|json)\"",
     "prettier:fix": "npx prettier --write src",
     "generate": "npx prisma generate",
-    "postinstall": "npm run generate",
+    "postinstall": "prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1",
     "cModule": "node scripts/generateModule.js"
   },

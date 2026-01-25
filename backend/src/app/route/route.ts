@@ -6,6 +6,8 @@ import { ProductRoutes } from "../modules/product/product.route";
 import { CartRoutes } from "../modules/cart/cart.route";
 import { OrderRoutes } from "../modules/order/order.route";
 import { DashboardRoutes } from "../modules/dashboard/dashboard.route";
+import { WishlistRoutes } from "../modules/wishlist/wishlist.route";
+import { AuthorRoutes } from "../modules/author/author.route";
 
 const router = Router();
 const routes = [
@@ -22,6 +24,10 @@ const routes = [
     component: CategoryRoutes,
   },
   {
+    path: "/authors",
+    component: AuthorRoutes,
+  },
+  {
     path: "/products",
     component: ProductRoutes,
   },
@@ -32,6 +38,10 @@ const routes = [
   {
     path: "/orders",
     component: OrderRoutes,
+  },
+  {
+    path: "/wishlists",
+    component: WishlistRoutes,
   },
   {
     path: "/dashboard",
