@@ -118,7 +118,11 @@ const deleteCategory = async (req: Request) => {
     where: { id: req.params.id },
     select: {
       image: true,
-      products: true,
+      products: {
+        select: {
+          id: true,
+        },
+      },
     },
   });
   if (!existing) {
@@ -137,6 +141,7 @@ const deleteCategory = async (req: Request) => {
   }
 
   await prisma.category.delete({ where: { id: req.params.id } });
+  return true;
 };
 
 export const CategoryServices = {

@@ -43,6 +43,7 @@ model Otp {
 model Author {
   id         String  @id @default(auto()) @map("_id") @db.ObjectId
   name       String
+  slug       String  @unique
   bio        String?
   image      String?
   isActive   Boolean @default(true)

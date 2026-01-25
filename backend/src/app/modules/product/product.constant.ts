@@ -2,7 +2,7 @@ import { NestedFilter } from "../../interface/nestedFiltering";
 import { rangeFilteringPrams } from "../../../utils/queryBuilder";
 
 // Fields for basic filtering
-export const productFilterFields = ["isFeatured", "isActive"];
+export const productFilterFields = ["isFeatured", "isActive", "publisher"];
 
 // Fields for top-level search
 export const productSearchFields = ["title", "author"];
@@ -10,6 +10,7 @@ export const productSearchFields = ["title", "author"];
 // Nested filtering config
 export const productNestedFilters: NestedFilter[] = [
   // { key: "user", searchOption: "search", queryFields: ["name"] },
+  { key: "author", searchOption: "enum", queryFields: ["name"] },
 ];
 
 // Array-based filtering
@@ -44,4 +45,11 @@ export const productRangeFilter: rangeFilteringPrams[] = [
 export const productSelect = {};
 
 // Prisma include configuration
-export const productInclude = {};
+export const productInclude = {
+  author: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
+};

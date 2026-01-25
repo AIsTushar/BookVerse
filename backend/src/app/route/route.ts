@@ -8,6 +8,7 @@ import { OrderRoutes } from "../modules/order/order.route";
 import { DashboardRoutes } from "../modules/dashboard/dashboard.route";
 import { WishlistRoutes } from "../modules/wishlist/wishlist.route";
 import { AuthorRoutes } from "../modules/author/author.route";
+import { ReviewRoutes } from "../modules/review/review.route";
 
 const router = Router();
 const routes = [
@@ -42,6 +43,10 @@ const routes = [
   {
     path: "/wishlists",
     component: WishlistRoutes,
+  },
+  {
+    path: "/reviews",
+    component: ReviewRoutes,
   },
   {
     path: "/dashboard",

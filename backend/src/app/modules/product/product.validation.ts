@@ -4,6 +4,9 @@ const createProductSchema = z.object({
   categoryId: z.string({
     required_error: "Category is required!",
   }),
+  authorId: z.string({
+    required_error: "Author is required!",
+  }),
   title: z.string({
     required_error: "Title is required!",
   }),
@@ -15,9 +18,6 @@ const createProductSchema = z.object({
   }),
   stock: z.number({
     required_error: "Stock is required!",
-  }),
-  author: z.string({
-    required_error: "Author is required!",
   }),
   publisher: z
     .string({
@@ -34,6 +34,12 @@ const updateProductSchema = z.object({
   categoryId: z
     .string({
       required_error: "Category is required!",
+    })
+    .optional(),
+
+  authorId: z
+    .string({
+      required_error: "Author is required!",
     })
     .optional(),
   title: z
@@ -54,11 +60,6 @@ const updateProductSchema = z.object({
   stock: z
     .number({
       required_error: "Stock is required!",
-    })
-    .optional(),
-  author: z
-    .string({
-      required_error: "Author is required!",
     })
     .optional(),
   publisher: z

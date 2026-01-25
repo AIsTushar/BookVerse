@@ -11,7 +11,6 @@ import {
   productArrayFilterFields,
   productSelect,
 } from "./product.constant";
-import config from "../../../config";
 import { StatusCodes } from "http-status-codes";
 import ApiError from "../../error/ApiErrors";
 import { Prisma } from "@prisma/client";
@@ -24,6 +23,23 @@ import { generateSlugFromFields } from "../../../utils/slugify";
 const createProduct = async (req: Request) => {
   const payload = req.body;
 
+  const category = await prisma.category.findUnique({
+    where: { id: payload.categoryId },
+  });
+  if (!category) {
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      `Category not found with this id: ${payload.categoryId}`,
+    );
+  }
+
+  const author = await prisma.author.findUnique({
+    where: { id: payload.authorId },
+  });
+  if (!author) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, "Author not found!");
+  }
+
   let imageUrls: string[] = [];
   const files = req.files as Express.Multer.File[] | undefined;
 
@@ -35,7 +51,7 @@ const createProduct = async (req: Request) => {
 
   payload.slug = await generateSlugFromFields(
     payload,
-    ["title", "author"],
+    ["title"],
     prisma.product,
   );
 
@@ -55,7 +71,7 @@ const getProducts = async (req: Request) => {
     .sort()
     .paginate()
     //.select(productSelect)
-    //.include(productInclude)
+    .include(productInclude)
     .fields()
     .filterByRange(productRangeFilter)
     .execute();
@@ -84,13 +100,12 @@ const updateProduct = async (req: Request) => {
     );
   }
 
-  if (data.title || data.author) {
+  if (data.title) {
     data.slug = await generateSlugFromFields(
       {
         title: data.title ?? existing.title,
-        author: data.author ?? existing.author,
       },
-      ["title", "author"],
+      ["title"],
       prisma.product,
     );
   }

@@ -121,7 +121,7 @@ class QueryBuilder<T> {
     const formattedFilters: Record<string, any> = {};
 
     // Define known boolean fields here
-    const booleanFields = ["isActive", "isPublished"];
+    const booleanFields = ["isActive", "isPublished", "isFeatured"];
 
     for (const [key, value] of Object.entries(queryObj)) {
       if (typeof value === "string" && value.includes("[")) {

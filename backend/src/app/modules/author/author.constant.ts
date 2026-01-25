@@ -1,17 +1,15 @@
-
 import { NestedFilter } from "../../interface/nestedFiltering";
 import { rangeFilteringPrams } from "../../../utils/queryBuilder";
 
 // Fields for basic filtering
-export const authorFilterFields = [];
+export const authorFilterFields = ["isActive", "isFeatured"];
 
 // Fields for top-level search
-export const authorSearchFields = [];
+export const authorSearchFields = ["name"];
 
 // Nested filtering config
 export const authorNestedFilters: NestedFilter[] = [
-	// { key: "user", searchOption: "search", queryFields: ["name"] },
-
+  // { key: "user", searchOption: "search", queryFields: ["name"] },
 ];
 
 // Array-based filtering
@@ -28,20 +26,16 @@ export const authorMultiSelectNestedArrayFilters = [
 
 // Range-based filtering config
 export const authorRangeFilter: rangeFilteringPrams[] = [
-	{
-		field: "createdAt",
-		maxQueryKey: "maxDate",
-		minQueryKey: "minDate",
-		dataType: "date",
-	},
+  {
+    field: "createdAt",
+    maxQueryKey: "maxDate",
+    minQueryKey: "minDate",
+    dataType: "date",
+  },
 ];
 
 // Prisma select configuration
-export const authorSelect = {
- 
-};
+export const authorSelect = {};
 
 // Prisma include configuration
-export const authorInclude = {
-	
-};
+export const authorInclude = {};

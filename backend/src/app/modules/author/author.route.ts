@@ -19,9 +19,10 @@ router
   )
   .get(AuthorControllers.getAuthors);
 
+router.route("/:slug").get(AuthorControllers.getAuthorBySlug);
+
 router
   .route("/:id")
-  .get(AuthorControllers.getAuthorById)
   .put(
     auth(),
     uploadSingleImage,
