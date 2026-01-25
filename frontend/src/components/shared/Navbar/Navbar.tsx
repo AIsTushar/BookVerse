@@ -15,6 +15,7 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { useAppSelector } from "@/redux/hooks";
 import { selectCurrentUser } from "@/redux/features/auth/authSlice";
+import { signOut } from "next-auth/react";
 
 const NavOptions = [
   { title: "Home", url: "/" },
@@ -30,7 +31,6 @@ function NavBar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const user = useAppSelector(selectCurrentUser);
@@ -52,12 +52,6 @@ function NavBar() {
         document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [profileDropdownOpen]);
-
-  const handleSignOut = () => {
-    // Add your sign out logic here
-    setIsLoggedIn(false);
-    setProfileDropdownOpen(false);
-  };
 
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm">
@@ -163,7 +157,7 @@ function NavBar() {
                         </Link>
                         <hr className="my-1 border-gray-200" />
                         <button
-                          onClick={handleSignOut}
+                          onClick={() => signOut()}
                           className="flex w-full items-center gap-3 px-4 py-3 text-sm text-red-600 transition-colors hover:bg-red-50"
                         >
                           <LogOut className="h-4 w-4" />
