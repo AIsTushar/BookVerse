@@ -13,7 +13,11 @@ export const myCache = new NodeCache({ stdTTL: 300 });
 const app = express();
 
 export const corsOptions = {
-  origin: ["http://localhost:3000"],
+  origin: [
+    "http://localhost:3000",
+    "https://bookshopadmin-lyart.vercel.app",
+    "http://localhost:8080",
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,

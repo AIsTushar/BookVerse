@@ -1,13 +1,19 @@
 # Bookstore App
 
-## 📚 Overview
+## Overview
 
 **This App** is a full-featured e-commerce platform built for buying and selling books online—with a admin dashboard and a seamless user experience.
 
-## 🧪 API Documentation
+## API Documentation
 
 Postman collection link:  
-👉 [Postman Documentation URL](https://documenter.getpostman.com/view/21536674/2sBXVmdnVj)
+ [Postman Documentation URL](https://documenter.getpostman.com/view/21536674/2sBXVmdnVj)
+
+## LIVE URL's
+
+Postman collection link:  
+[BACKEND](https://bookverse-jade-psi.vercel.app),
+[ADMIN Dashboard](https://bookshopadmin-lyart.vercel.app)
 
 ## Features
 
