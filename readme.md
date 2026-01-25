@@ -4,9 +4,14 @@
 
 **This App** is a full-featured e-commerce platform built for buying and selling books online—with a admin dashboard and a seamless user experience.
 
-## ✨ Features
+## 🧪 API Documentation
 
-### 🔐 Authentication & Account Security
+Postman collection link:  
+👉 [Postman Documentation URL](https://documenter.getpostman.com/view/21536674/2sBXVmdnVj)
+
+## Features
+
+### Authentication & Account Security
 
 - **Email Verification**:  
   Users receive a one-time password (OTP) via email using a custom **SMTP-based OTP system** to verify their account upon registration.
@@ -15,7 +20,7 @@
 - **Google Sign-In**:  
   Supports seamless authentication using **Google ID Token**, allowing users to log in or register without creating a new password.
 
-### 💳 Secure Payments with Stripe
+### Secure Payments with Stripe
 
 - **Stripe Integration**:  
   Full integration with **Stripe** for handling online payments securely.
@@ -24,7 +29,7 @@
 - **Order Checkout**:  
   Users can complete purchases directly from the cart using saved or new payment methods.
 
-### 👨‍💻 Admin Dashboard (Protected Routes)
+### Admin Dashboard (Protected Routes)
 
 - **Content Management**:  
   Admins can **create, update, and delete** books, authors, and categories directly from the dashboard.
@@ -38,7 +43,7 @@
 - **User Oversight**:  
   View user list and toggle account status (active/suspended) as needed.
 
-### 🛍️ User-Facing Storefront (Frontend)
+### User-Facing Storefront (Frontend)
 
 - **Smart Book Discovery**:  
   Users can browse the full catalog and refine results using multiple filters:
@@ -60,21 +65,16 @@
 - **Responsive & Intuitive UI**:  
   Designed for smooth navigation on both desktop and mobile devices.
 
-### 📦 Backend Architecture Highlights
+### Backend Architecture Highlights
 
 - RESTful API design with clear resource separation (`/api/v1/...`)
 - Role-based access control (user vs. admin)
 - Secure session management using HTTP-only cookies or JWT (as implemented)
 - Input validation and error handling across all endpoints
 
-## 🧪 API Documentation
+## API Routes
 
-Postman collection link:  
-👉 [Postman Documentation URL](https://documenter.getpostman.com/view/21536674/2sBXVmdnVj)
-
-## 📌 API Routes
-
-### 🔐 Authentication
+### Authentication
 
 - `POST` `/api/v1/auth/login`
 - `POST` `/api/v1/auth/verify-otp`
@@ -84,7 +84,7 @@ Postman collection link:
 - `POST` `/api/v1/auth/reset-password`
 - `GET` `/api/v1/auth/social-login`
 
-### 👤 Users (Admin)
+### Users (Admin)
 
 - `POST` `/api/v1/user/create`
 - `GET` `/api/v1/user/me`
@@ -92,7 +92,7 @@ Postman collection link:
 - `PUT` `/api/v1/user/change-password`
 - `GET` `/api/v1/user/all-users`
 
-### 📚 Categories
+### Categories
 
 - `POST` `/api/v1/categories`
 - `GET` `/api/v1/categories`
@@ -100,7 +100,7 @@ Postman collection link:
 - `PATCH` `/api/v1/categories/:id`
 - `DELETE` `/api/v1/categories/:id`
 
-### ✍️ Authors
+### Authors
 
 - `POST` `/api/v1/authors`
 - `GET` `/api/v1/authors`
@@ -108,7 +108,7 @@ Postman collection link:
 - `PATCH` `/api/v1/authors/:id`
 - `DELETE` `/api/v1/authors/:id`
 
-### 📦 Products
+### Products
 
 - `POST` `/api/v1/products`
 - `GET` `/api/v1/products`
@@ -116,20 +116,20 @@ Postman collection link:
 - `PATCH` `/api/v1/products/:id`
 - `DELETE` `/api/v1/products/:id`
 
-### ❤️ Wishlist
+### Wishlist
 
 - `POST` `/api/v1/wishlist`
 - `GET` `/api/v1/wishlist`
 - `DELETE` `/api/v1/wishlist/:productId`
 
-### 🛒 Cart
+### Cart
 
 - `POST` `/api/v1/cart`
 - `GET` `/api/v1/cart`
 - `PATCH` `/api/v1/cart/:productId`
 - `DELETE` `/api/v1/cart/:productId`
 
-### 📦 Orders
+### Orders
 
 - `POST` `/api/v1/orders`
 - `GET` `/api/v1/orders`
@@ -137,18 +137,18 @@ Postman collection link:
 - `GET` `/api/v1/orders/admin`
 - `PATCH` `/api/v1/orders/:id/status`
 
-### ⭐ Reviews
+### Reviews
 
 - `POST` `/api/v1/reviews`
 - `GET` `/api/v1/reviews/product/:productId`
 - `PATCH` `/api/v1/reviews/:id`
 - `DELETE` `/api/v1/reviews/:id`
 
-### 📊 Dashboard (Admin)
+### Dashboard (Admin)
 
 - `GET` `/api/v1/dashboard/stats`
 - `GET` `/api/v1/dashboard/revenue-chart?year=YYYY`
 
-### 💳 Payments (Stripe)
+### Payments (Stripe)
 
 - `POST` `/api/v1/payments/create-intent`
