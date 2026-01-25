@@ -1,0 +1,46 @@
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import { getCurrentUser } from "./services/AuthService";
+
+const authRoutes = ["/login"];
+
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  const userInfo = await getCurrentUser();
+
+  // if Not logged in or not an admin
+  if (!userInfo?.id || !userInfo?.email || userInfo?.role !== "ADMIN") {
+    // Only allow login page / auth pages
+    if (authRoutes.includes(pathname)) {
+      return NextResponse.next();
+    } else {
+      // Redirect to login
+      return NextResponse.redirect(
+        new URL(`${request.nextUrl.origin}/login`, request.url)
+      );
+    }
+  }
+
+  // if it is admin but trying to visit /login, redirect to dashboard
+  if (authRoutes.includes(pathname)) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: [
+    "/",
+    "/login",
+    "/user-management",
+    "/vehicle-list",
+    "/transaction",
+    "/food-category",
+    "/parcel-category",
+    "/admin-management",
+    "/review",
+    "/commission",
+  ],
+};
