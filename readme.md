@@ -10,8 +10,7 @@ Postman collection link:
  [Postman Documentation URL](https://documenter.getpostman.com/view/21536674/2sBXVmdnVj)
 
 ## LIVE URL's
-
-Postman collection link:  
+ 
 [BACKEND](https://bookverse-jade-psi.vercel.app),
 [ADMIN Dashboard](https://bookshopadmin-lyart.vercel.app)
 
